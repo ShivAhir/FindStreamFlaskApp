@@ -1,94 +1,113 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Find Stream</title>
     <style>
-        .hidden {
-            display: none;
-        }
-        #form_body{
-            height: 200px;
-            overflow: hidden;
-        }
+      .hidden {
+        display: none;
+      }
+      #form_body {
+        height: 200px;
+        overflow: hidden;
+      }
     </style>
-</head>
-<body>
-    <form action="get" method="post">
-        <div id="form_body">
-            <label for="directory">Enter the directory to search the stream from: </label>
-            <input id="directory" type="text" required><br><br>
-            <label for="codec_type">Select the codec type: </label>
-            <select name="codec_type" id="codec_type" required onchange="showOptions()">
-                <option value="" disabled selected >Select</option>
-                <option value="audio">Audio</option>
-                <option value="video">Video</option>
-                <option value="subtitle">Subtitle</option>
-            </select><br><br>
-            <div id="d_v_codecName" class="hidden">
-                <label for="v_codecName">Select the video codec type: </label>
-                <select name="v_codecName" id="v_codecName" required>
-                    <option value="" disabled selected>Select</option>
-                    <option value="mpeg2video">mpeg2video</option>
-                    <option value="H264">H264</option>
-                </select><br><br>
-            </div>
-            <div id="d_v_resolution" class="hidden">
-                <label for="v_resolution">Select the video resolution: </label>
-                <select name="v_resolution" id="v_resolution" required>
-                    <option value="" disabled selected>Select</option>
-                    <option value="HD">HD</option>
-                    <option value="SD">SD</option>
-                </select><br><br>
-            </div>
-            <div id="d_v_pixelFmt" class="hidden">
-                <label for="v_pixelFmt">Select the pixel fromat: </label>
-                <select name="v_pixelFmt" id="v_pixelFmt" required>
-                    <option value="" disabled selected>Select</option>
-                    <option value="yuv420p">yuv420p</option>
-                    <option value="yuv422p">yuv422p</option>
-                </select><br><br>
-            </div>
-            <div id="d_s_codecName" class="hidden">
-                <label for="s_codecName">Select the desired subtitle codec type: </label>
-                <select name="s_codecName" id="s_codec">
-                    <option value="" disabled selected>Select</option>
-                    <option value="dvb_subtitle">dvb_subtitle</option>
-                    <option value="dvb_teletext">dvb_teletext</option>
-                </select><br><br>
-            </div>
-            <div id="d_a_codecName" class="hidden">
-                <label for="a_codecName">Select the desired audio codec:</label>
-                <select name="a_codecName" id="a_codec">
-                    <option value="" disabled selected>Select</option>
-                    <option value="ac3">ac3</option>
-                    <option value="mp2">mp2</option>
-                    <option value="mp3">mp3</option>
-                </select><br><br>
-            </div>
+  </head>
+  <body>
+    <form method="POST">
+      <div id="form_body">
+        <label for="directory"
+          >Enter the directory to search the stream from:
+        </label>
+        <input
+          name="directory"
+          id="directory"
+          type="text"
+          required
+        /><br /><br />
+        <label for="codec_type">Select the codec type: </label>
+        <select
+          name="codec_type"
+          id="codec_type"
+          required
+          onchange="showOptions()"
+        >
+          <option value="" disabled selected>Select</option>
+          <option value="audio">Audio</option>
+          <option value="video">Video</option>
+          <option value="subtitle">Subtitle</option></select
+        ><br /><br />
+        <div id="d_v_codecName" class="hidden">
+          <label for="v_codecName">Select the video codec type: </label>
+          <select name="v_codecName" id="v_codecName" required>
+            <option value="" disabled selected>Select</option>
+            <option value="mpeg2video">mpeg2video</option>
+            <option value="H264">H264</option></select
+          ><br /><br />
         </div>
-        <button type="submit">Submit</button>
+        <div id="d_v_resolution" class="hidden">
+          <label for="v_resolution">Select the video resolution: </label>
+          <select name="v_resolution" id="v_resolution" required>
+            <option value="" disabled selected>Select</option>
+            <option value="HD">HD</option>
+            <option value="SD">SD</option></select
+          ><br /><br />
+        </div>
+        <div id="d_v_pixelFmt" class="hidden">
+          <label for="v_pixelFmt">Select the pixel fromat: </label>
+          <select name="v_pixelFmt" id="v_pixelFmt" required>
+            <option value="" disabled selected>Select</option>
+            <option value="yuv420p">yuv420p</option>
+            <option value="yuv422p">yuv422p</option></select
+          ><br /><br />
+        </div>
+        <div id="d_s_codecName" class="hidden">
+          <label for="s_codecName"
+            >Select the desired subtitle codec type:
+          </label>
+          <select name="s_codecName" id="s_codec">
+            <option value="" disabled selected>Select</option>
+            <option value="dvb_subtitle">dvb_subtitle</option>
+            <option value="dvb_teletext">dvb_teletext</option></select
+          ><br /><br />
+        </div>
+        <div id="d_a_codecName" class="hidden">
+          <label for="a_codecName">Select the desired audio codec:</label>
+          <select name="a_codecName" id="a_codec">
+            <option value="" disabled selected>Select</option>
+            <option value="ac3">ac3</option>
+            <option value="mp2">mp2</option>
+            <option value="mp3">mp3</option></select
+          ><br /><br />
+        </div>
+      </div>
+      <button type="submit">Submit</button>
     </form>
+    <h2>List of Streams</h2>
+    <ul>
+      {% if streams %} {% for stream in streams %}
+      <li>{{ stream }}</li>
+      {% endfor %} {% endif %}
+    </ul>
     <script>
-        function showOptions() {
-            var codec_type = document.getElementById('codec_type').value;
-            document.getElementById('d_a_codecName').classList.add('hidden');
-            document.getElementById('d_v_codecName').classList.add('hidden');
-            document.getElementById('d_v_resolution').classList.add('hidden');
-            document.getElementById('d_v_pixelFmt').classList.add('hidden');
-            document.getElementById('d_s_codecName').classList.add('hidden');
-            if (codec_type === 'audio') {
-                document.getElementById('d_a_codecName').classList.remove('hidden');
-            } else if (codec_type === 'video') {
-                document.getElementById('d_v_codecName').classList.remove('hidden');
-                document.getElementById('d_v_resolution').classList.remove('hidden');
-                document.getElementById('d_v_pixelFmt').classList.remove('hidden');
-            }
-            else if(codec_type === 'subtitle'){
-                document.getElementById('d_s_codecName').classList.remove('hidden');
-            }
+      function showOptions() {
+        var codec_type = document.getElementById("codec_type").value;
+        document.getElementById("d_a_codecName").classList.add("hidden");
+        document.getElementById("d_v_codecName").classList.add("hidden");
+        document.getElementById("d_v_resolution").classList.add("hidden");
+        document.getElementById("d_v_pixelFmt").classList.add("hidden");
+        document.getElementById("d_s_codecName").classList.add("hidden");
+        if (codec_type === "audio") {
+          document.getElementById("d_a_codecName").classList.remove("hidden");
+        } else if (codec_type === "video") {
+          document.getElementById("d_v_codecName").classList.remove("hidden");
+          document.getElementById("d_v_resolution").classList.remove("hidden");
+          document.getElementById("d_v_pixelFmt").classList.remove("hidden");
+        } else if (codec_type === "subtitle") {
+          document.getElementById("d_s_codecName").classList.remove("hidden");
         }
+      }
     </script>
-</body>
+  </body>
 </html>
