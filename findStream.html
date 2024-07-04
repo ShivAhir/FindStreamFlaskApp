@@ -4,110 +4,321 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Find Stream</title>
+    <!--Import Google Icon Font-->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!--Import materialize.css -->
+    <link rel="stylesheet" href="{{url_for('static', filename='css/materialize.css')}}">
+    <!--Let browser know website is optimized for mobile-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <style>
-      .hidden {
-        display: none;
-      }
-      #form_body {
-        height: 200px;
-        overflow: hidden;
-      }
+        body {
+            display: flex;
+            min-height: 100vh;
+            flex-direction: column;
+        }
+        .black-button {
+            background-color: #000;
+            padding: 10px 20px;
+            color: #fff;
+            border: none;
+            border-radius: 20px;
+            text-align: center;
+            font-size: 16px;
+        }
+        main {
+            flex: 1 0 auto;
+        }
+        .hidden {
+            display: none;
+        }
+        .searchStreams{
+            margin: 1%;
+        }
+        .row-filter{
+            padding-left: 2%;
+            padding-right: 5%;
+        }
+        .container-btn-filter{
+            text-align: center;
+            height: 8vh;
+        }
+        .btn-filter{
+            width:25%;
+        }
+        table {
+            width: 80%;
+            border-collapse: collapse;
+            margin:10%;
+            margin-top:0%;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+        th {
+            background-color: #f2f2f2;
+            text-align: center;
+        }
+        .play-button {
+
+        }
+    
+        .nav-content .tabs .tab form {
+            margin: 0; /* Remove default margin from form */
+        }
+        .nav-content .tabs .tab button {
+            display: inline-block; /* Make the button inline-block */
+            padding: 10px 20px; /* Padding inside the button */
+            background-color: #e57373; /* Button background color (red lighten-2) */
+            color: #ffffff; /* Button text color */
+            text-decoration: none; /* Remove underline from link */
+            border: none; /* Remove default border */
+            border-radius: 5px; /* Rounded corners */
+            cursor: pointer; /* Pointer cursor on hover */
+            transition: background-color 0.3s ease; /* Smooth transition for hover effect */
+        }
+        .nav-content .tabs .tab button:hover {
+            background-color: #d32f2f; /* Darker background color on hover */
+        }
     </style>
   </head>
   <body>
-    <form method="POST">
-      <div id="form_body">
-        <label for="directory"
-          >Enter the directory to search the stream from:
-        </label>
-        <input
-          name="directory"
-          id="directory"
-          type="text"
-          required
-        /><br /><br />
-        <label for="codec_type">Select the codec type: </label>
-        <select
-          name="codec_type"
-          id="codec_type"
-          required
-          onchange="showOptions()"
-        >
-          <option value="" disabled selected>Select</option>
-          <option value="audio">Audio</option>
-          <option value="video">Video</option>
-          <option value="subtitle">Subtitle</option></select
-        ><br /><br />
-        <div id="d_v_codecName" class="hidden">
-          <label for="v_codecName">Select the video codec type: </label>
-          <select name="v_codecName" id="v_codecName" required>
-            <option value="" disabled selected>Select</option>
-            <option value="mpeg2video">mpeg2video</option>
-            <option value="H264">H264</option></select
-          ><br /><br />
+    <header>
+        <nav class="nav-extended">
+            <div class="nav-wrapper yellow darken-1">
+                <a href="#" class="brand-logo" style="color: #000;">TSPLAY</a>
+            </div>
+            <div class="nav-content">
+                <ul class="tabs tabs-transparent">
+                    <li class="tab">
+                        <form action="http://172.16.179.200:80/">
+                            <button class="waves-effect waves-light red lighten-2" type="submit">RETURN TO HOME PAGE</button>
+                        </form>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+    <main>
+        <div id="lookupStreams">
+            <div class='searchStreams'>
+                <div class="alert card blue lighten-4 blue-text text-darken-3">
+                    <div class="card-content">
+                        <p>
+                            <strong>Note:</strong> The directory you enter should be copied properly from '172.16.179.200' PC
+                        </p>
+                    </div>
+                </div>
+
+                <div class='note'>
+                    <h6 style="text-align:center; font-weight: bold;"> </h6>
+                </div>
+                <form class="col s12" action="http://172.16.179.200:80/lookupStreams/results" method="POST">    
+                    <div id="form_body">
+                        <div class='row'>
+                            <div class="input-field col s3">
+                                <label for="directory"
+                                >Enter the directory to search the stream from:
+                                </label>
+                            </div>
+                            <div class="input-field col s3">
+                                <input
+                                name="directory"
+                                id="directory"
+                                type="text"
+                                required
+                                />
+                            </div>
+                        </div>
+                        <div class='row row-filter'>
+                            <div class="input-field col s3">
+                                <select
+                                name="codec_type"
+                                id="codec_type"
+                                required
+                                onchange="showOptions()"
+                                >
+                                <option value="" disabled selected>Select the codec type</option>
+                                <option value="audio">Audio</option>
+                                <option value="video">Video</option>
+                                <option value="subtitle">Subtitle</option></select
+                                >
+                            </div>
+                            <div id="d_s_codecName" class="hidden">
+                                <div class="input-field col s3">
+                                    <select name="s_codecName" id="s_codec">
+                                        <option value="" disabled selected>Select the desired subtitle codec type</option>
+                                        <option value="dvb_subtitle">dvb_subtitle</option>
+                                        <option value="dvb_teletext">dvb_teletext</option></select
+                                    >
+                                </div>
+                            </div>
+                            <div id="d_a_codecName" class="hidden">
+                                <div class="input-field col s3">
+                                    <select name="a_codecName" id="a_codec">
+                                        <option value="" disabled selected>Select the desired audio codec</option>
+                                        <option value="ac3">ac3</option>
+                                        <option value="mp2">mp2</option>
+                                        <option value="mp3">mp3</option></select
+                                    >
+                                </div>
+                            </div>
+                            <div id="d_v_codecName" class="hidden">
+                                <div class="input-field col s3">
+                                    <select name="v_codecName" id="v_codecName">
+                                        <option value="" disabled selected>Select the video codec type</option>
+                                        <option value="mpeg2video">mpeg2video</option>
+                                        <option value="H264">H264</option></select
+                                    >
+                                </div>
+                            </div>
+                            <div id="d_v_resolution" class="hidden">  
+                                <div class="input-field col s3">
+                                    <select name="v_resolution" id="v_resolution">
+                                        <option value="" disabled selected>Select the video resolution</option>
+                                        <option value="HD">HD</option>
+                                        <option value="SD">SD</option></select
+                                    >
+                                </div>
+                            </div>
+                            <div id="d_v_pixelFmt" class="hidden">
+                                <div class="input-field col s3">
+                                    <select name="v_pixelFmt" id="v_pixelFmt">
+                                        <option value="" disabled selected>Select the pixel fromat</option>
+                                        <option value="yuv420p">yuv420p</option>
+                                        <option value="yuv422p">yuv422p</option></select
+                                    >
+                                </div>    
+                            </div>
+                        </div>
+                        <div class='container-btn-filter'>
+                            <button class="waves-effect waves-light btn btn-filter" type="submit">Filter</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            {% if streams %}
+            <h6 style="text-align: center;" >Directory: {{ directory }}</h6>
+            <h4 style="text-align: center;" >List of Streams</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Stream_name</th>
+                        {% for key in streams[0].keys() %}
+                            {% if key != 'stream_name' %}
+                                <th style="text-transform: capitalize;">{{ key }}</th>
+                            {% endif %}
+                        {% endfor %}
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for stream in streams %}
+                    <tr>
+                        <td>{{ stream['stream_name'] }}</td>
+                        {% for key, value in stream.items() %}
+                            {% if key != 'stream_name' %}
+                                <td>{{ value }}</td>
+                            {% endif %}
+                        {% endfor %}
+                        <td style="text-align: center;">
+                            <button class="play-button waves-effect waves-light btn" onclick="openModal('{{ stream['stream_name'] }}')">Play</button>   
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% endif %}
+             <div id="playModal" class="modal">
+                <div class="modal-content">
+                    <h4>Message</h4>
+                    <p style="text-transform: capitalize;">The selected stream has been played</p>
+                </div>
+                <div class="modal-footer">
+                    <button class="modal-close waves-effect waves-light btn" >Close</button>
+                </div>
+            </div>
+            <script>
+                let currentStreamName = '';
+                let directoryName = '';
+                function showOptions() {
+                    var codec_type = document.getElementById("codec_type").value;
+                    directoryName = document.getElementById('directory').value;
+                    setCookie('directory', directoryName, 7);
+                    console.log(directoryName);
+                    document.getElementById("d_a_codecName").classList.add("hidden");
+                    document.getElementById("d_v_codecName").classList.add("hidden");
+                    document.getElementById("d_v_resolution").classList.add("hidden");
+                    document.getElementById("d_v_pixelFmt").classList.add("hidden");
+                    document.getElementById("d_s_codecName").classList.add("hidden");
+                    if (codec_type === "audio") {
+                        document.getElementById("d_a_codecName").classList.remove("hidden");
+                    } else if (codec_type === "video") {
+                        document.getElementById("d_v_codecName").classList.remove("hidden");
+                        document.getElementById("d_v_resolution").classList.remove("hidden");
+                        document.getElementById("d_v_pixelFmt").classList.remove("hidden");
+                    } else if (codec_type === "subtitle") {
+                        document.getElementById("d_s_codecName").classList.remove("hidden");
+                    }
+                }
+                // I have added these functions to share the information of directory to different pages as per needs    
+                function setCookie(name, value, days) {
+                    var expires = "";
+                    if (days) {
+                        var date = new Date();
+                        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                        expires = "; expires=" + date.toUTCString();
+                    }
+                    document.cookie = name + "=" + (value || "") + expires + "; path=/";
+                }
+                function getCookie(name) {
+                    var nameEQ = name + "=";
+                    var ca = document.cookie.split(';');
+                    for (var i = 0; i < ca.length; i++) {
+                        var c = ca[i];
+                        while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+                        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+                    }
+                    return null;
+                }
+
+                function openModal(streamName) {
+                    currentStreamName = streamName;
+                    var elems = document.querySelectorAll('.modal');
+                    var instances = M.Modal.init(elems);
+                    var instance = M.Modal.getInstance(document.getElementById('playModal'));
+                    instance.open();
+                    directoryName = getCookie('directory');
+                    // logic to play the stream using a backend route on tsplay backend
+                    fetch('/play_stream', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ stream_name: currentStreamName, 
+                            directory: directoryName,}),
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('Success:', data);
+                    })
+                    .catch((error) => {
+                        console.error('Error:', error);
+                    });
+                }
+            </script>
+            <!-- Import materialize.js -->
+            <script src="{{url_for('static', filename='js/materialize.js')}}" ></script>
+            <script>
+                M.AutoInit();  
+            </script>
         </div>
-        <div id="d_v_resolution" class="hidden">
-          <label for="v_resolution">Select the video resolution: </label>
-          <select name="v_resolution" id="v_resolution" required>
-            <option value="" disabled selected>Select</option>
-            <option value="HD">HD</option>
-            <option value="SD">SD</option></select
-          ><br /><br />
-        </div>
-        <div id="d_v_pixelFmt" class="hidden">
-          <label for="v_pixelFmt">Select the pixel fromat: </label>
-          <select name="v_pixelFmt" id="v_pixelFmt" required>
-            <option value="" disabled selected>Select</option>
-            <option value="yuv420p">yuv420p</option>
-            <option value="yuv422p">yuv422p</option></select
-          ><br /><br />
-        </div>
-        <div id="d_s_codecName" class="hidden">
-          <label for="s_codecName"
-            >Select the desired subtitle codec type:
-          </label>
-          <select name="s_codecName" id="s_codec">
-            <option value="" disabled selected>Select</option>
-            <option value="dvb_subtitle">dvb_subtitle</option>
-            <option value="dvb_teletext">dvb_teletext</option></select
-          ><br /><br />
-        </div>
-        <div id="d_a_codecName" class="hidden">
-          <label for="a_codecName">Select the desired audio codec:</label>
-          <select name="a_codecName" id="a_codec">
-            <option value="" disabled selected>Select</option>
-            <option value="ac3">ac3</option>
-            <option value="mp2">mp2</option>
-            <option value="mp3">mp3</option></select
-          ><br /><br />
-        </div>
-      </div>
-      <button type="submit">Submit</button>
-    </form>
-    <h2>List of Streams</h2>
-    <ul>
-      {% if streams %} {% for stream in streams %}
-      <li>{{ stream }}</li>
-      {% endfor %} {% endif %}
-    </ul>
-    <script>
-      function showOptions() {
-        var codec_type = document.getElementById("codec_type").value;
-        document.getElementById("d_a_codecName").classList.add("hidden");
-        document.getElementById("d_v_codecName").classList.add("hidden");
-        document.getElementById("d_v_resolution").classList.add("hidden");
-        document.getElementById("d_v_pixelFmt").classList.add("hidden");
-        document.getElementById("d_s_codecName").classList.add("hidden");
-        if (codec_type === "audio") {
-          document.getElementById("d_a_codecName").classList.remove("hidden");
-        } else if (codec_type === "video") {
-          document.getElementById("d_v_codecName").classList.remove("hidden");
-          document.getElementById("d_v_resolution").classList.remove("hidden");
-          document.getElementById("d_v_pixelFmt").classList.remove("hidden");
-        } else if (codec_type === "subtitle") {
-          document.getElementById("d_s_codecName").classList.remove("hidden");
-        }
-      }
-    </script>
-  </body>
+    </main>
+    <footer class="page-footer">
+            <div class="footer-copyright container" style="background-color: #ee6e73">
+                @Shiv Ahir (Multiviewer Team)
+                <p class="grey-text text-lighten-4 right">For Questions/Modifications: <a href="mailto:sahir@evertz.com">Contact here</a></p>
+            </div>
+    </footer>
+</body>
 </html>
