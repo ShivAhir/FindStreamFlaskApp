@@ -8,6 +8,28 @@ import re
 
 app = Flask(__name__)
 
+def currentStreams():
+    currentStreams = os.popen('ps -o pid,cmd --ppid 1 | grep tsplay')
+    output = currentStreams.read()
+    outputList = output.split('\n')
+    finalOutput = outputList.pop(0)
+    print(outputList)
+    finalList = []
+    for i in outputList:
+        app.logger.debug(i)
+        if re.search('-loop -maxnowait', i):
+            finalList.append(i)
+    json_data = json.dumps(finalList, indent=4)
+    data = json.loads(json_data)
+    last_entry = data[-1]
+    parts = last_entry.split()
+    ip_address = parts[3]
+    ip_parts = ip_address.split('.')
+    ip_parts[-1] = str(int(ip_parts[-1]) + 1)
+    new_ip_address = '.'.join(ip_parts)
+    return new_ip_address
+
+
 def get_codec_info(file_path):
     try:
         ffprobe_cmd = [
@@ -63,6 +85,9 @@ def addNumberOfChannels(streams):
         result.append(entry_dict)
     return result
 
+@app.route('/lookupStreams', methods = ['POST'])
+def filter():
+    return render_template('findStream.html')
 
 @app.route('/', methods = ['GET','POST'])
 def filter():
@@ -139,6 +164,16 @@ def filter():
                         filtered_streams.append(stream)
         return render_template('findStream.html', streams=filtered_streams)
     return render_template('findStream.html', streams=[])
+
+@app.route('/play_stream', methods = ['POST'])
+def playStream():
+    data = request.get_json()
+    streamName = data.get('stream_name')
+    directory = data.get('directory')
+    portNumber = '1234'
+    multicastAddress = getMulticastAddress()
+    os.system('tsplay '+ directory +'/'+ streamName +' '+ multicastAddress +':' + portNumber + ' -loop -maxnowait 240 -i 10.10.179.200 &')
+    return jsonify({"message": f"Playing stream: {streamName} from {directory} with Multicast: {multicastAddress} on Port: {portNumber}"})
 
 if __name__ == '__main__':
     app.run(debug=True)
