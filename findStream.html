@@ -59,26 +59,23 @@
             background-color: #f2f2f2;
             text-align: center;
         }
-        .play-button {
-
-        }
     
         .nav-content .tabs .tab form {
-            margin: 0; /* Remove default margin from form */
+            margin: 0; 
         }
         .nav-content .tabs .tab button {
-            display: inline-block; /* Make the button inline-block */
-            padding: 10px 20px; /* Padding inside the button */
-            background-color: #e57373; /* Button background color (red lighten-2) */
-            color: #ffffff; /* Button text color */
-            text-decoration: none; /* Remove underline from link */
-            border: none; /* Remove default border */
-            border-radius: 5px; /* Rounded corners */
-            cursor: pointer; /* Pointer cursor on hover */
-            transition: background-color 0.3s ease; /* Smooth transition for hover effect */
+            display: inline-block; 
+            padding: 10px 20px; 
+            background-color: #e57373; 
+            color: #ffffff;
+            text-decoration: none; 
+            border: none; 
+            border-radius: 5px; 
+            cursor: pointer; 
+            transition: background-color 0.3s ease; 
         }
         .nav-content .tabs .tab button:hover {
-            background-color: #d32f2f; /* Darker background color on hover */
+            background-color: #d32f2f; 
         }
     </style>
   </head>
@@ -138,11 +135,12 @@
                                 required
                                 onchange="showOptions()"
                                 >
-                                <option value="" disabled selected>Select the codec type</option>
-                                <option value="audio">Audio</option>
-                                <option value="video">Video</option>
-                                <option value="subtitle">Subtitle</option></select
-                                >
+                                    <option value="" disabled selected>Select the codec type</option>
+                                    <option value="audio">Audio</option>
+                                    <option value="video">Video</option>
+                                    <option value="subtitle">Subtitle</option>
+                                    <option value="data">Data</option>
+                                </select>
                             </div>
                             <div id="d_s_codecName" class="hidden">
                                 <div class="input-field col s3">
@@ -167,6 +165,7 @@
                                 <div class="input-field col s3">
                                     <select name="v_codecName" id="v_codecName">
                                         <option value="" disabled selected>Select the video codec type</option>
+                                        <option value="hevc">HEVC</option>
                                         <option value="mpeg2video">mpeg2video</option>
                                         <option value="H264">H264</option></select
                                     >
@@ -176,6 +175,7 @@
                                 <div class="input-field col s3">
                                     <select name="v_resolution" id="v_resolution">
                                         <option value="" disabled selected>Select the video resolution</option>
+                                        <option value="UHD">4K/UHD</option>
                                         <option value="HD">HD</option>
                                         <option value="SD">SD</option></select
                                     >
@@ -184,11 +184,21 @@
                             <div id="d_v_pixelFmt" class="hidden">
                                 <div class="input-field col s3">
                                     <select name="v_pixelFmt" id="v_pixelFmt">
-                                        <option value="" disabled selected>Select the pixel fromat</option>
+                                        <option disabled selected>Select the pixel fromat</option>
                                         <option value="yuv420p">yuv420p</option>
                                         <option value="yuv422p">yuv422p</option></select
                                     >
                                 </div>    
+                            </div>
+                            <div id="d_d_type" class="hidden">
+                                <div class="input-field col s3">
+                                    <select name="d_type" id="d_type">
+                                        <option disabled selected>Select the type of data</option>
+                                        <option value="scte_35">SCTE 35</option>
+                                        <option value="bin_data">Bin Data</option>
+                                        <option value="epg">EPG</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
                         <div class='container-btn-filter'>
@@ -197,16 +207,25 @@
                     </div>
                 </form>
             </div>
+           
             {% if streams %}
             <h6 style="text-align: center;" >Directory: {{ directory }}</h6>
             <h4 style="text-align: center;" >List of Streams</h4>
-            <table>
+            <table id="filtered_streams">
                 <thead>
                     <tr>
                         <th>Stream_name</th>
                         {% for key in streams[0].keys() %}
                             {% if key != 'stream_name' %}
-                                <th style="text-transform: capitalize;">{{ key }}</th>
+                                {% if key != 'id' %}
+                                    <th style="text-transform: capitalize;">{{ key }}</th>
+                                {% endif %}
+                                {% if key == 'id' %}
+                                <th style="text-transform: uppercase;">{{ key }}</th>
+                                {% endif %}
+                                <!-- {% if key == 'channel' %}
+                                <th style="text-transform: uppercase;" onclick="sortChannels()">{{ key }}</th>
+                                {% endif %} -->
                             {% endif %}
                         {% endfor %}
                         <th>Action</th>
@@ -260,6 +279,9 @@
                     } else if (codec_type === "subtitle") {
                         document.getElementById("d_s_codecName").classList.remove("hidden");
                     }
+                    else if (codec_type === 'data'){
+                        document.getElementById("d_d_type").classList.remove("hidden");
+                    }
                 }
                 // I have added these functions to share the information of directory to different pages as per needs    
                 function setCookie(name, value, days) {
@@ -305,6 +327,9 @@
                     .catch((error) => {
                         console.error('Error:', error);
                     });
+                }
+                function sortChannels(){
+
                 }
             </script>
             <!-- Import materialize.js -->
