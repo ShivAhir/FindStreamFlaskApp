@@ -95,7 +95,7 @@ def filterResults():
                 return "Missing form field: a_codecName", 400
         elif codec_type == 'video':
             try:
-                codec_name = request.form.get('v_codecName').lower().strip()
+                codec_name = request.form.get('v_codecName','').lower().strip()
                 resolution = request.form.get('v_resolution', '').upper().strip()
                 pix_format = request.form.get('v_pixelFmt', '').lower().strip()
             except KeyError as e:
@@ -159,12 +159,15 @@ def filterResults():
                         continue
                     filtered_streams.append(stream)
                 elif codec_type == 'audio':
+                    print('inside audio')
                     if 'bits_per_sample' in stream and stream['codec_name'] == codec_name:
                         filtered_streams.append(stream)
                 elif codec_type == 'subtitle':
+                    print('inside sub')
                     if stream['codec_name'] == codec_name:
                         filtered_streams.append(stream)
                 elif codec_type == 'data':
+                    print('inside data')
                     if stream['codec_name'] == codec_name:
                         filtered_streams.append(stream)
         return render_template('lookupStreams.html', streams=filtered_streams, directory=directory)
