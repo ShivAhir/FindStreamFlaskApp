@@ -156,6 +156,7 @@
                                     <select name="a_codecName" id="a_codec">
                                         <option value="" disabled selected>Select the desired audio codec</option>
                                         <option value="ac3">ac3</option>
+                                        <option value="aac">aac</option>
                                         <option value="mp2">mp2</option>
                                         <option value="mp3">mp3</option></select
                                     >
@@ -185,9 +186,13 @@
                                 <div class="input-field col s3">
                                     <select name="v_pixelFmt" id="v_pixelFmt">
                                         <option disabled selected>Select the pixel fromat</option>
-                                        <option value="yuv420p">yuv420p</option>
-                                        <option value="yuv422p">yuv422p</option></select
-                                    >
+                                        <option value="yuv420p">yuv420 8 bit</option>
+                                        <option value="yuv422p">yuv422 8 bit</option>
+                                        <option value="yuv444p">yuv444 8 bit</option>
+                                        <option value="yuv420p10le">yuv420 10 bit</option>
+                                        <option value="yuv422p10le">yuv422 10 bit</option>
+                                        <option value="yuv444p10le">yuv444 10 bit</option>
+                                    </select>
                                 </div>    
                             </div>
                             <div id="d_d_type" class="hidden">
@@ -217,15 +222,15 @@
                         <th>Stream_name</th>
                         {% for key in streams[0].keys() %}
                             {% if key != 'stream_name' %}
-                                {% if key != 'id' %}
+                                {% if key != 'id' and key != 'channel' %}
                                     <th style="text-transform: capitalize;">{{ key }}</th>
                                 {% endif %}
-                                {% if key == 'id' %}
+                                {% if key == 'id' and key!= 'channel' %}
                                 <th style="text-transform: uppercase;">{{ key }}</th>
                                 {% endif %}
-                                <!-- {% if key == 'channel' %}
+                                {% if key == 'channel' %}
                                 <th style="text-transform: uppercase;" onclick="sortChannels()">{{ key }}</th>
-                                {% endif %} -->
+                                {% endif %}
                             {% endif %}
                         {% endfor %}
                         <th>Action</th>
@@ -329,7 +334,9 @@
                     });
                 }
                 function sortChannels(){
-
+                    let table = document.getElementById('filtered_streams')
+                    let rows = table.rows
+                    console.log('Number of rows in the table are: ' + rows)
                 }
             </script>
             <!-- Import materialize.js -->
